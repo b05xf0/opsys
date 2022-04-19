@@ -8,6 +8,14 @@
 #define STR_(X) #X
 #define STR(X) STR_(X)
 
+#define ANSI_COLOR_RED     "\x1b[31m"
+#define ANSI_COLOR_GREEN   "\x1b[32m"
+#define ANSI_COLOR_YELLOW  "\x1b[33m"
+#define ANSI_COLOR_BLUE    "\x1b[34m"
+#define ANSI_COLOR_MAGENTA "\x1b[35m"
+#define ANSI_COLOR_CYAN    "\x1b[36m"
+#define ANSI_COLOR_RESET   "\x1b[0m"
+
 char menu(void);
 void new_reg(void);
 void mod_reg(void);
@@ -33,6 +41,7 @@ int main()
       case '3' : del_reg(); break;
       case '4' : print_list(false); break;
       case '5' : print_list(true); break;
+      case '6' : printf("/nTodo.../n"); break;
       default : fprintf(stderr,"Hiba: ervenytelen valasztas\n"); break;
     }
   }
@@ -46,7 +55,10 @@ char menu()
   printf("\n(2) Regisztracio modositasa");
   printf("\n(3) Regisztracio torlese");
   printf("\n(4) Osszes jelentkezo listaja");
-  printf("\n(5) Jelentkezok listaja lakoteruletenkent\n");
+  printf("\n(5) Jelentkezok listaja lakoteruletenkent");
+  printf(ANSI_COLOR_YELLOW);
+  printf("\n(6) Verseny indítása\n");
+  printf(ANSI_COLOR_RESET);
   printf("\nvagy (k)ilepes a programbol? ");
   char choice = getchar();
   while (getchar() != '\n');
