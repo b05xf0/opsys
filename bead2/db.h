@@ -5,6 +5,11 @@
 
 typedef struct {
   char name[L_NAME + 1];
+  int inspector; 
+} Area;
+
+typedef struct {
+  char name[L_NAME + 1];
   bool is_deleted;
   int area, cnt;
 } Bunny;
@@ -14,5 +19,6 @@ void upd(int, Bunny*);
 int sel(int, int (*printer)(int, Bunny*));
 int src(Bunny*);
 const char* area_name(int);
+int area_inspector(int);
 
 #endif

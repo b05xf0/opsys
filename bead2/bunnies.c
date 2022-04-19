@@ -2,6 +2,7 @@
 #include <stdbool.h>
 
 #include "db.h"
+#include "contest.h"
 
 #define L_AREA 20
 
@@ -25,6 +26,7 @@ int print_rec(int, Bunny*);
 void inp_name(char*);
 void inp_area(int*);
 void inp_cnt(int*);
+void start_contest();
 
 int main()
 {
@@ -41,7 +43,7 @@ int main()
       case '3' : del_reg(); break;
       case '4' : print_list(false); break;
       case '5' : print_list(true); break;
-      case '6' : printf("/nTodo.../n"); break;
+      case '6' : start_contest(); break;
       default : fprintf(stderr,"Hiba: ervenytelen valasztas\n"); break;
     }
   }
@@ -192,4 +194,9 @@ void inp_cnt(int* cnt)
       fprintf(stderr, "Hiba: ervenytelen adat\n");
     while (getchar() != '\n');
   } while (is_invalid);
+}
+
+void start_contest()
+{
+    printf("\nKezdodik a verseny...\n");
 }

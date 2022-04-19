@@ -9,14 +9,14 @@
 
 #define F_BUNNIES "bunnies.dat"
 
-static const char* areas[] = {
-  "Baratfa",
-  "Lovas",
-  "Szula",
-  "Kigyos-patak",
-  "Malom telek",
-  "Paskom",
-  "Kaposztas kert"
+static const Area areas[] = {
+  {"Baratfa", 0},
+  {"Lovas", 0},
+  {"Szula", 1},
+  {"Kigyos-patak", 0},
+  {"Malom telek", 1},
+  {"Paskom", 1},
+  {"Kaposztas kert", 0}
 };
 
 int open_db(int access_mode)
@@ -92,5 +92,10 @@ int src(Bunny* s_rec)
 
 const char* area_name(int idx)
 {
-  return (idx > (int)sizeof(areas) / (int)sizeof(areas[0])) ? NULL : areas[idx - 1];
+  return (idx > (int)sizeof(areas) / (int)sizeof(areas[0])) ? NULL : areas[idx - 1].name;
+}
+
+int area_inspector(int idx)
+{
+  return (idx > (int)sizeof(areas) / (int)sizeof(areas[0])) ? -1 : areas[idx - 1].inspector;
 }
