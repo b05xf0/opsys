@@ -59,14 +59,14 @@ void upd(int idx, Bunny* rec)
   close(f);
 }
 
-int sel(int area, int (*printer)(int, Bunny*))
+int sel(int area, int (*printer)(Bunny*))
 {
   int f = open_db(O_RDONLY);
   Bunny rec;
   int c = 0;
   while (read(f, &rec, sizeof rec))
-    if (!rec.is_deleted)
-      c += printer(area, &rec);
+    if (!rec.is_deleted && (0 == area || rec.area == area))
+      c += printer(&rec);
   close(f);
   return c;
 }

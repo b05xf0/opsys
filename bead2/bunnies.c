@@ -22,7 +22,7 @@ void new_reg(void);
 void mod_reg(void);
 void del_reg(void);
 void print_list(bool);
-int print_rec(int, Bunny*);
+int print_rec(Bunny*);
 void inp_name(char*);
 void inp_area(int*);
 void inp_cnt(int*);
@@ -42,7 +42,7 @@ int main()
       case '3' : del_reg(); break;
       case '4' : print_list(false); break;
       case '5' : print_list(true); break;
-      case '6' : start_contest(); break;
+      case '6' : run_contest(); break;
       default : fprintf(stderr,"Hiba: ervenytelen valasztas\n"); break;
     }
   }
@@ -149,16 +149,11 @@ void print_list(bool is_filtered)
     printf("Nincs megjelenitheto adat\n");
 }
 
-int print_rec(int area, Bunny* rec)
+int print_rec(Bunny* rec)
 {
-  int c = 0;
-  if (0 == area || rec->area == area)
-  {
-    printf(" %-" STR(L_NAME) "s| %-" STR(L_AREA) "s| %19i\n",
-             rec->name, area_name(rec->area), rec->cnt);
-    c = 1;
-  }
-  return c;
+  printf(" %-" STR(L_NAME) "s| %-" STR(L_AREA) "s| %19i\n",
+         rec->name, area_name(rec->area), rec->cnt);
+  return 1;
 }
 
 void inp_name(char* name)

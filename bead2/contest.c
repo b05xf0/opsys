@@ -3,92 +3,89 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdbool.h>
+#include <sys/wait.h>
+#include <time.h>
+#include <string.h>
 #include "contest.h"
 #include "db.h"
 
+#define LINE_FROM_BOSS(X) pfd_out[(X)][0] 
+#define LINE_TO_INSPECTOR(X) pfd_out[(X)][1] 
+#define LINE_FROM_INSPECTORS pfd_in[0] 
+#define LINE_TO_BOSS pfd_in[1] 
+#define N_INSPECTOR 2
 
-void start_contest()
+static int pfd_out[N_INSPECTOR][2];
+static int pfd_in[2];
+
+void inspectors_job(int);
+int send_job(Bunny*);
+
+void run_contest()
 {
-  printf("\nKezdodik a verseny...\n");
-  int pfd_out_1[2];
-  int pfd_out_2[2];
-  int pfd_in[2];
-
-  if (pipe(pfd_out_1) == -1) { perror("Hiba a pipe nyitaskor!"); exit(1);}  
-  if (pipe(pfd_out_2) == -1) { perror("Hiba a pipe nyitaskor!"); exit(1);}  
-  if (pipe(pfd_in) == -1) { perror("Hiba a pipe nyitaskor!"); exit(1);}  
-
-  int inspector_1 = fork();
-  if (inspector_1 < 0){perror(":(\n"); exit(1);}
-  if (inspector_1 > 0)
+  pid_t child;
+  Bunny winner;
+  Bunny rec;
+  int max_cnt = 0;
+  printf("\nFonyuszi: kezdodik a verseny...\n\n");
+  if (pipe(pfd_in) == -1) { perror(":(\n"); exit(1);}
+  for (int inspector = 0; inspector < N_INSPECTOR; ++inspector)
   {
-    int inspector_2 = fork();
-    if (inspector_2 < 0){perror(":(\n"); exit(1);}
-    if (inspector_2 == 0)
+    if (pipe(pfd_out[inspector]) == -1) { perror(":(\n"); exit(1);} 
+    if ((child = fork()) < 0) {perror(":(\n"); exit(1);}
+    if (child == 0)
     {
-      close(pfd_out_1[1]);
-      close(pfd_out_2[0]);
-      close(pfd_out_2[1]);
-      close(pfd_in[0]);
-      inspector(1, pfd_out_1[0], pfd_in[1]);
+      close(LINE_FROM_INSPECTORS);
+      close(LINE_TO_INSPECTOR(inspector));
+      inspectors_job(inspector);
+      close(LINE_FROM_BOSS(inspector));
+      close(LINE_TO_BOSS);
+      _exit(0);
     }
     else
-    {/*
-      close(pfd_out_1[0]);
-      close(pfd_out_1[1]);
-      close(pfd_out_2[0]);
-      close(pfd_out_2[1]);
-      close(pfd_in[0]);
-      close(pfd_in[1]);*/
-      Bunny* winner;
-
-      close(pfd_out_1[0]);
-      close(pfd_out_2[0]);
-      close(pfd_in[1]);
-    boss(winner,pfd_out_1[1],pfd_out_2[1],pfd_in[0]);
+    {
+      close(LINE_FROM_BOSS(inspector));
+    } 
+  }
+  close(LINE_TO_BOSS);
+  sel(0, &send_job);
+  
+  for (int inspector=0; inspector < N_INSPECTOR; ++inspector)
+  {
+    close(LINE_TO_INSPECTOR(inspector));
+  }
+  
+  while(read(LINE_FROM_INSPECTORS,&rec,sizeof(rec))>0)
+  {
+    printf("Fonyuszi: %s eredmenye (%i) fogadva\n",rec.name,rec.cnt);
+    if (rec.cnt > max_cnt)
+    {
+      max_cnt = rec.cnt;
+      winner = rec;
     }
   }
-  else
+  close(LINE_FROM_INSPECTORS);
+  while(wait(NULL)>0);
+  printf("Fonyuszi: ...veget ert a verseny, %s nyert %i tojással\n", winner.name, winner.cnt);
+}
+
+int send_job(Bunny* rec)
+{
+  write(LINE_TO_INSPECTOR(area_inspector(rec->area)),rec,sizeof(*rec));
+  printf("Fonyuszi: %s (%s) adatai elküldve Felugyelo(%i) reszere\n", rec->name, area_name(rec->area), area_inspector(rec->area));
+}
+
+void inspectors_job(int inspector)
+{
+  Bunny rec;
+  printf("Felugyelo(%i): munka elkezdese\n", inspector);
+  srand(getpid() * time(NULL));
+  while((read(LINE_FROM_BOSS(inspector),&rec,sizeof(rec)))>0)
   {
-      close(pfd_out_1[1]);
-      close(pfd_out_1[0]);
-      close(pfd_out_2[1]);
-      close(pfd_in[0]);
-    inspector(2, pfd_out_2[0], pfd_in[1]);
+    printf("Felugyelo(%i): %s (%s) adatai fogadva\n", inspector, rec.name, area_name(rec.area));
+    rec.cnt = rand() % 100 + 1;
+    write(LINE_TO_BOSS,&rec,sizeof(rec));
+    printf("Felugyelo(%i): %s (%s) eredmenye (%i) visszakuldve\n", inspector, rec.name, area_name(rec.area), rec.cnt);
   }
-}
-
-
-void boss(Bunny* winner,int pfd_out_1,int pfd_out_2,int pfd_in)
-{
-  int m_1=1;
-  int m_2=2;
-  int r;
-  printf("\nboss kuld...\n");
-  write(pfd_out_1,&m_1,7);
-  write(pfd_out_2,&m_2,7);
-  close(pfd_out_1);
-  close(pfd_out_2);
-  while(read(pfd_in,&r,sizeof(r))>0){
-    sleep(1);
-    printf("visszakap: %i\n", r);
-  }
-  close(pfd_in);
-  printf("\nboss vege...\n");
-}
-
-void inspector(int inspector_id, int pfd_in, int pfd_out)
-{
-  int m;
-  printf("\n%i jelen...\n", inspector_id);
-  while(read(pfd_in,&m,sizeof(m))>0){
-    sleep(1);
-    printf("\n%i visszakuld...\n", inspector_id);
-    write(pfd_out,&m,sizeof(m));
-  }
-  close(pfd_in);
-  close(pfd_out);
-  printf("\n%i vege...\n", inspector_id);
-  exit(0);
- 
+  printf("Felugyelo(%i): munka elvegezve\n", inspector);
 }
