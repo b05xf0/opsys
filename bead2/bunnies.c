@@ -26,7 +26,6 @@ int print_rec(int, Bunny*);
 void inp_name(char*);
 void inp_area(int*);
 void inp_cnt(int*);
-void start_contest();
 
 int main()
 {
@@ -194,9 +193,4 @@ void inp_cnt(int* cnt)
       fprintf(stderr, "Hiba: ervenytelen adat\n");
     while (getchar() != '\n');
   } while (is_invalid);
-}
-
-void start_contest()
-{
-    printf("\nKezdodik a verseny...\n");
 }
