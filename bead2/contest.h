@@ -1,6 +1,10 @@
 #ifndef CONTEST_H
 #define CONTEST_H
 
-void run_contest();
+#include "db.h"
+
+#define N_INSPECTOR 2
+
+void run_contest(Bunny*);
 
 #endif

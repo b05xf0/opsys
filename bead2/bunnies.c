@@ -26,6 +26,7 @@ int print_rec(Bunny*);
 void inp_name(char*);
 void inp_area(int*);
 void inp_cnt(int*);
+void start_contest(void);
 
 int main()
 {
@@ -42,7 +43,7 @@ int main()
       case '3' : del_reg(); break;
       case '4' : print_list(false); break;
       case '5' : print_list(true); break;
-      case '6' : run_contest(); break;
+      case '6' : start_contest(); break;
       default : fprintf(stderr,"Hiba: ervenytelen valasztas\n"); break;
     }
   }
@@ -57,9 +58,7 @@ char menu()
   printf("\n(3) Regisztracio torlese");
   printf("\n(4) Osszes jelentkezo listaja");
   printf("\n(5) Jelentkezok listaja lakoteruletenkent");
-  printf(ANSI_COLOR_YELLOW);
-  printf("\n(6) Verseny indítása\n");
-  printf(ANSI_COLOR_RESET);
+  printf("\n"ANSI_COLOR_YELLOW"(6) Verseny indítása"ANSI_COLOR_RESET"\n");
   printf("\nvagy (k)ilepes a programbol? ");
   char choice = getchar();
   while (getchar() != '\n');
@@ -147,6 +146,21 @@ void print_list(bool is_filtered)
   printf("\n");
   if(0 == sel(area, &print_rec))
     printf("Nincs megjelenitheto adat\n");
+}
+
+void start_contest()
+{
+  Bunny winner;
+  printf("\nA verseny");
+  printf("\n---------\n");
+  printf("\nNapló:\n");
+  run_contest(&winner);
+  printf("\nA verseny nyertese: "
+          ANSI_COLOR_YELLOW"%s"ANSI_COLOR_RESET
+          " (%s), eredmenye "
+          ANSI_COLOR_YELLOW"%i tojast"ANSI_COLOR_RESET
+          " gyujtott\n"
+         ,winner.name, area_name(winner.area), winner.cnt);
 }
 
 int print_rec(Bunny* rec)
