@@ -57,10 +57,12 @@ vagy (k)ilepes a programbol?
 
 ## Forrásfájlok
 
-| Fájlnév       | Leírás                                        |
-| :---          | :---                                          |
-| `bunnies.c`   | főprogram, felhasználói interakciók kezelése  |
-| `db.h`        | adatbázis műveletek deklarációja              |
-| `db.c`        | adatbázis (fájl) műveletek megvalósítása      |
-| `bunnies.dat` | adatbázis fájl                                |
-| `bunnies.sh`  | script fordításhoz és futtatáshoz             |
+| Fájlnév       | Leírás                                                     |
+| :---          | :---                                                       |
+| `bunnies.c`   | főprogram, felhasználói interakciók kezelése               |
+| `db.h`        | adatbázis műveletek deklarációja                           |
+| `db.c`        | adatbázis (fájl) műveletek megvalósítása                   |
+| `contest.h`   | verseny lebonyolításához szükséges műveletek interface-e   |
+| `contest.c`   | verseny lebonyolításához szükséges műveletek megvalósítása |
+| `bunnies.dat` | adatbázis fájl                                             |
+| `bunnies.sh`  | script fordításhoz és futtatáshoz                          |
