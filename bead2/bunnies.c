@@ -153,7 +153,7 @@ void start_contest()
   Bunny winner;
   printf("\nA verseny");
   printf("\n---------\n");
-  printf("\nNapló:\n");
+  printf("\nNaplo:\n");
   run_contest(&winner);
   printf("\nA verseny nyertese: "
           ANSI_COLOR_YELLOW"%s"ANSI_COLOR_RESET
