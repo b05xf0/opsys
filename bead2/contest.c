@@ -21,7 +21,7 @@ void run_contest(Bunny* winner)
 {
   Bunny rec;
   int max_cnt = 0;
-  printf("\nFonyuszi: kezdodik a verseny...\n");
+  printf("\nFonyuszi: kezdodik a verseny\n");
   if (pipe(pfd_in) == -1){
     perror("Hiba: a kommunikacios csatorna megnyitasa nem sikerult\n");
     exit(EXIT_FAILURE);
@@ -65,7 +65,7 @@ void run_contest(Bunny* winner)
     }
   }
   close(LINE_FROM_INSPECTORS);
-  printf("Fonyuszi: ...veget ert a verseny\n");
+  printf("Fonyuszi: veget ert a verseny\n");
 }
 
 int send_job(Bunny* rec)
@@ -79,9 +79,9 @@ int send_job(Bunny* rec)
 void inspectors_job(int inspector)
 {
   Bunny rec;
-  printf("Felugyelo(%i): munka elkezdese\n", inspector);
+  printf("Felugyelo(%i): munka elkezdve\n", inspector);
   srand(getpid() * time(NULL));
-  while((read(LINE_FROM_BOSS(inspector), &rec, sizeof rec))>0)
+  while((read(LINE_FROM_BOSS(inspector), &rec, sizeof rec)) > 0)
   {
     printf("Felugyelo(%i): %s (%s) adatai fogadva\n",
            inspector, rec.name, area_name(rec.area));
