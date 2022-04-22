@@ -16,7 +16,7 @@ typedef struct {
 
 void ins(Bunny*);
 void upd(int, Bunny*);
-int sel(int, int (*printer)(Bunny*));
+int sel(int, int (*fun)(Bunny*));
 int src(Bunny*);
 const char* area_name(int);
 int area_inspector(int);
