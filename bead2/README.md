@@ -28,7 +28,7 @@ Beadási határidő: **2022 május 9.**
 ## Fordítás, futtatás
 
 ```txt
-gcc bunnies.c db.c
+gcc bunnies.c db.c contest.c
 ./a.out
 ```
 vagy
