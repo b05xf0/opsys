@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdbool.h>
-#include <sys/wait.h>
 #include <time.h>
 #include "contest.h"
 #include "db.h"
@@ -20,7 +19,6 @@ int send_job(Bunny*);
 
 void run_contest(Bunny* winner)
 {
-  pid_t child;
   Bunny rec;
   int max_cnt = 0;
   printf("\nFonyuszi: kezdodik a verseny...\n");
@@ -59,8 +57,7 @@ void run_contest(Bunny* winner)
        close(LINE_TO_INSPECTOR(inspector++)));
   while(read(LINE_FROM_INSPECTORS, &rec, sizeof rec) > 0)
   {
-    printf("Fonyuszi: %s eredmenye (%i) fogadva\n"
-           , rec.name, rec.cnt);
+    printf("Fonyuszi: %s eredmenye (%i) fogadva\n", rec.name, rec.cnt);
     if (rec.cnt > max_cnt)
     {
       max_cnt = rec.cnt;
@@ -73,9 +70,9 @@ void run_contest(Bunny* winner)
 
 int send_job(Bunny* rec)
 {
-  write(LINE_TO_INSPECTOR(area_inspector(rec->area)), rec, sizeof(*rec));
-  printf("Fonyuszi: %s (%s) adatai elkuldve Felugyelo(%i) reszere\n"
-         ,rec->name, area_name(rec->area), area_inspector(rec->area));
+  write(LINE_TO_INSPECTOR(area_inspector(rec->area)), rec, sizeof *rec);
+  printf("Fonyuszi: %s (%s) adatai elkuldve Felugyelo(%i) reszere\n",
+         rec->name, area_name(rec->area), area_inspector(rec->area));
   return 1;
 }
 
@@ -86,12 +83,12 @@ void inspectors_job(int inspector)
   srand(getpid() * time(NULL));
   while((read(LINE_FROM_BOSS(inspector), &rec, sizeof rec))>0)
   {
-    printf("Felugyelo(%i): %s (%s) adatai fogadva\n"
-           ,inspector, rec.name, area_name(rec.area));
+    printf("Felugyelo(%i): %s (%s) adatai fogadva\n",
+           inspector, rec.name, area_name(rec.area));
     rec.cnt = rand() % 100 + 1;
     write(LINE_TO_BOSS, &rec, sizeof rec);
-    printf("Felugyelo(%i): %s (%s) eredmenye (%i) visszakuldve\n"
-           ,inspector, rec.name, area_name(rec.area), rec.cnt);
+    printf("Felugyelo(%i): %s (%s) eredmenye (%i) visszakuldve\n",
+           inspector, rec.name, area_name(rec.area), rec.cnt);
   }
   printf("Felugyelo(%i): munka elvegezve\n", inspector);
 }
