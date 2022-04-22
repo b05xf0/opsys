@@ -149,7 +149,7 @@ void start_contest()
   run_contest(&winner);
   printf("\nA verseny nyertese: "
           ANSI_COLOR_YELLOW"%s"ANSI_COLOR_RESET
-          " (%s), eredmenye "
+          " (%s), "
           ANSI_COLOR_YELLOW"%i tojast"ANSI_COLOR_RESET
           " gyujtott\n"
          ,winner.name, area_name(winner.area), winner.cnt);
