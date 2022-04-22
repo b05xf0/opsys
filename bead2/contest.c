@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -27,46 +26,41 @@ void run_contest(Bunny* winner)
   printf("\nFonyuszi: kezdodik a verseny...\n");
   if (pipe(pfd_in) == -1){
     perror("Hiba: a kommunikacios csatorna megnyitasa nem sikerult\n");
-    exit(1);
+    exit(EXIT_FAILURE);
   }
   for (int inspector = 0; inspector < N_INSPECTOR; ++inspector)
   {
     if (pipe(pfd_out[inspector]) == -1)
     {
       perror("Hiba: a kommunikacios csatorna megnyitasa nem sikerult\n");
-      exit(1);
-    } 
-    if ((child = fork()) < 0)
-    {
-      perror("Hiba: egy felugyelo megbetegedett\n");
-      exit(1);
+      exit(EXIT_FAILURE);
     }
-    if (child == 0)
+    switch (fork())
     {
-      close(LINE_FROM_INSPECTORS);
-      close(LINE_TO_INSPECTOR(inspector));
-      inspectors_job(inspector);
-      close(LINE_FROM_BOSS(inspector));
-      close(LINE_TO_BOSS);
-      _exit(0);
+      case -1:
+        perror("Hiba: egy felugyelo megbetegedett\n");
+        exit(EXIT_FAILURE);
+      case 0:
+        close(LINE_FROM_INSPECTORS);
+        close(LINE_TO_INSPECTOR(inspector));
+        inspectors_job(inspector);
+        close(LINE_FROM_BOSS(inspector));
+        close(LINE_TO_BOSS);
+        _exit(EXIT_SUCCESS);
+      default:
+        close(LINE_FROM_BOSS(inspector));   
     }
-    else
-    {
-      close(LINE_FROM_BOSS(inspector));
-    } 
   }
   close(LINE_TO_BOSS);
   printf("Fonyuszi: osszes resztvevo (%i) adatai elkuldve\n",
          sel(0, &send_job)); 
-  for (int inspector=0; inspector < N_INSPECTOR; ++inspector)
-  {
-    close(LINE_TO_INSPECTOR(inspector));
-  }
-  
-  while(read(LINE_FROM_INSPECTORS,&rec,sizeof(rec)) > 0)
+  for (int inspector=0;
+       inspector < N_INSPECTOR;
+       close(LINE_TO_INSPECTOR(inspector++)));
+  while(read(LINE_FROM_INSPECTORS, &rec, sizeof rec) > 0)
   {
     printf("Fonyuszi: %s eredmenye (%i) fogadva\n"
-           ,rec.name,rec.cnt);
+           , rec.name, rec.cnt);
     if (rec.cnt > max_cnt)
     {
       max_cnt = rec.cnt;
@@ -74,7 +68,6 @@ void run_contest(Bunny* winner)
     }
   }
   close(LINE_FROM_INSPECTORS);
-  while(wait(NULL) > 0);
   printf("Fonyuszi: ...veget ert a verseny\n");
 }
 
@@ -91,12 +84,12 @@ void inspectors_job(int inspector)
   Bunny rec;
   printf("Felugyelo(%i): munka elkezdese\n", inspector);
   srand(getpid() * time(NULL));
-  while((read(LINE_FROM_BOSS(inspector),&rec,sizeof(rec)))>0)
+  while((read(LINE_FROM_BOSS(inspector), &rec, sizeof rec))>0)
   {
     printf("Felugyelo(%i): %s (%s) adatai fogadva\n"
            ,inspector, rec.name, area_name(rec.area));
     rec.cnt = rand() % 100 + 1;
-    write(LINE_TO_BOSS, &rec, sizeof(rec));
+    write(LINE_TO_BOSS, &rec, sizeof rec);
     printf("Felugyelo(%i): %s (%s) eredmenye (%i) visszakuldve\n"
            ,inspector, rec.name, area_name(rec.area), rec.cnt);
   }

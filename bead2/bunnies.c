@@ -44,7 +44,7 @@ int main()
       case '4' : print_list(false); break;
       case '5' : print_list(true); break;
       case '6' : start_contest(); break;
-      default : fprintf(stderr,"Hiba: ervenytelen valasztas\n"); break;
+      default : fprintf(stderr,"Hiba: ervenytelen valasztas\n");
     }
   }
   return 0;

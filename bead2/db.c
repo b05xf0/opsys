@@ -25,8 +25,8 @@ int open_db(int access_mode)
   int f = open(F_BUNNIES, access_mode | O_CREAT, S_IRUSR | S_IWUSR);
   if(f < 0)
   {
-    fprintf(stderr, "Hiba: nem sikerult megnyitni a '%s' fajlt\n", F_BUNNIES);
-    exit(1);
+    perror("Hiba: nem sikerult megnyitni az adatbazist\n");
+    exit(EXIT_FAILURE);
   }
   return f;
 }
@@ -35,8 +35,8 @@ void write_db(int f, Bunny* rec)
 {
   if(write(f, rec, sizeof *rec) != sizeof *rec)
   {
-    fprintf(stderr, "Hiba: az adatok mentese nem sikerult\n");
-    exit(1);      
+    perror("Hiba: az adatok mentese nem sikerult\n");
+    exit(EXIT_FAILURE);      
   }  
 }
 
@@ -79,7 +79,8 @@ int src(Bunny* s_rec)
   int idx = 0;
   bool found = false;
   while (read(f, &rec, sizeof rec) &&
-         !(found = (!rec.is_deleted && strcmp(rec.name, s_rec->name) == 0)))
+         !(found = (!rec.is_deleted &&
+                    strcmp(rec.name, s_rec->name) == 0)))
     ++idx;
   close(f);
   if(found)
@@ -93,10 +94,14 @@ int src(Bunny* s_rec)
 
 const char* area_name(int idx)
 {
-  return (idx > (int)sizeof(areas) / (int)sizeof(areas[0])) ? NULL : areas[idx - 1].name;
+  return (idx > (int)sizeof(areas) / (int)sizeof(areas[0]))
+         ? NULL
+         : areas[idx - 1].name;
 }
 
 int area_inspector(int idx)
 {
-  return (idx > (int)sizeof(areas) / (int)sizeof(areas[0])) ? -1 : areas[idx - 1].inspector;
+  return (idx > (int)sizeof(areas) / (int)sizeof(areas[0]))
+          ? -1
+          : areas[idx - 1].inspector;
 }
