@@ -21,7 +21,7 @@ void run_contest(Bunny* winner)
 {
   Bunny rec;
   int max_cnt = 0;
-  printf("\nFonyuszi: kezdodik a verseny\n");
+  printf("\n"LOG_BOSS"kezdodik a verseny\n");
   if (pipe(pfd_in) == -1){
     perror("Hiba: a kommunikacios csatorna megnyitasa nem sikerult\n");
     exit(EXIT_FAILURE);
@@ -50,14 +50,14 @@ void run_contest(Bunny* winner)
     }
   }
   close(LINE_TO_BOSS);
-  printf("Fonyuszi: osszes resztvevo (%i) adatai elkuldve\n",
+  printf(LOG_BOSS"osszes resztvevo (%i) adatai elkuldve\n",
          sel(0, &send_job)); 
   for (int inspector=0;
        inspector < N_INSPECTOR;
        close(LINE_TO_INSPECTOR(inspector++)));
   while(read(LINE_FROM_INSPECTORS, &rec, sizeof rec) > 0)
   {
-    printf("Fonyuszi: %s eredmenye (%i) fogadva\n", rec.name, rec.cnt);
+    printf(LOG_BOSS"%s eredmenye (%i) fogadva\n", rec.name, rec.cnt);
     if (rec.cnt > max_cnt)
     {
       max_cnt = rec.cnt;
@@ -65,13 +65,13 @@ void run_contest(Bunny* winner)
     }
   }
   close(LINE_FROM_INSPECTORS);
-  printf("Fonyuszi: veget ert a verseny\n");
+  printf(LOG_BOSS"veget ert a verseny\n");
 }
 
 int send_job(Bunny* rec)
 {
   write(LINE_TO_INSPECTOR(area_inspector(rec->area)), rec, sizeof *rec);
-  printf("Fonyuszi: %s (%s) adatai elkuldve Felugyelo(%i) reszere\n",
+  printf(LOG_BOSS"%s (%s) adatai elkuldve Felugyelo(%i) reszere\n",
          rec->name, area_name(rec->area), area_inspector(rec->area));
   return 1;
 }
@@ -79,16 +79,16 @@ int send_job(Bunny* rec)
 void inspectors_job(int inspector)
 {
   Bunny rec;
-  printf("Felugyelo(%i): munka elkezdve\n", inspector);
+  printf(LOG_INSPECTOR"munka elkezdve\n", inspector);
   srand(getpid() * time(NULL));
   while((read(LINE_FROM_BOSS(inspector), &rec, sizeof rec)) > 0)
   {
-    printf("Felugyelo(%i): %s (%s) adatai fogadva\n",
+    printf(LOG_INSPECTOR"%s (%s) adatai fogadva\n",
            inspector, rec.name, area_name(rec.area));
     rec.cnt = rand() % 100 + 1;
     write(LINE_TO_BOSS, &rec, sizeof rec);
-    printf("Felugyelo(%i): %s (%s) eredmenye (%i) visszakuldve\n",
+    printf(LOG_INSPECTOR"%s (%s) eredmenye (%i) visszakuldve\n",
            inspector, rec.name, area_name(rec.area), rec.cnt);
   }
-  printf("Felugyelo(%i): munka elvegezve\n", inspector);
+  printf(LOG_INSPECTOR"munka elvegezve\n", inspector);
 }
