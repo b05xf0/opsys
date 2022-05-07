@@ -2,7 +2,6 @@
 #include <stdbool.h>
 
 #include "db.h"
-#include "contest.h"
 
 #define L_AREA 20
 
@@ -14,11 +13,10 @@ void new_reg(void);
 void mod_reg(void);
 void del_reg(void);
 void print_list(bool);
-int print_rec(Bunny*);
+int print_rec(int, Bunny*);
 void inp_name(char*);
 void inp_area(int*);
 void inp_cnt(int*);
-void start_contest(void);
 
 int main()
 {
@@ -35,8 +33,7 @@ int main()
       case '3' : del_reg(); break;
       case '4' : print_list(false); break;
       case '5' : print_list(true); break;
-      case '6' : start_contest(); break;
-      default : fprintf(stderr,"Hiba: ervenytelen valasztas\n");
+      default : fprintf(stderr,"Hiba: ervenytelen valasztas\n"); break;
     }
   }
   return 0;
@@ -49,8 +46,7 @@ char menu()
   printf("\n(2) Regisztracio modositasa");
   printf("\n(3) Regisztracio torlese");
   printf("\n(4) Osszes jelentkezo listaja");
-  printf("\n(5) Jelentkezok listaja lakoteruletenkent");
-  printf("\n"ANSI_COLOR_YELLOW"(6) Verseny inditasa"ANSI_COLOR_RESET"\n");
+  printf("\n(5) Jelentkezok listaja lakoteruletenkent\n");
   printf("\nvagy (k)ilepes a programbol? ");
   char choice = getchar();
   while (getchar() != '\n');
@@ -140,26 +136,16 @@ void print_list(bool is_filtered)
     printf("Nincs megjelenitheto adat\n");
 }
 
-void start_contest()
+int print_rec(int area, Bunny* rec)
 {
-  Bunny winner;
-  printf("\nA verseny");
-  printf("\n---------\n");
-  printf("\nNaplo:\n");
-  run_contest(&winner);
-  printf("\nA verseny nyertese: "
-          ANSI_COLOR_YELLOW"%s"ANSI_COLOR_RESET
-          " (%s), "
-          ANSI_COLOR_YELLOW"%i tojast"ANSI_COLOR_RESET
-          " gyujtott\n"
-         ,winner.name, area_name(winner.area), winner.cnt);
-}
-
-int print_rec(Bunny* rec)
-{
-  printf(" %-" STR(L_NAME) "s| %-" STR(L_AREA) "s| %19i\n",
-         rec->name, area_name(rec->area), rec->cnt);
-  return 1;
+  int c = 0;
+  if (0 == area || rec->area == area)
+  {
+    printf(" %-" STR(L_NAME) "s| %-" STR(L_AREA) "s| %19i\n",
+             rec->name, area_name(rec->area), rec->cnt);
+    c = 1;
+  }
+  return c;
 }
 
 void inp_name(char* name)
@@ -178,7 +164,7 @@ void inp_area(int* area)
     printf("\n");
     while(NULL != area_name(i)) {printf("(%i)%s ", i, area_name(i)); ++i;}
     printf("\nLakoterulet sorszama (valassz a fenti lehetosegek kozul)? ");
-    if ((is_invalid = (scanf("%i", area) == 0 || *area < 1 || *area > i - 1)))
+    if (is_invalid = (scanf("%i", area) == 0 || *area < 1 || *area > i - 1))
       fprintf(stderr, "Hiba: ervenytelen adat\n");
     while (getchar() != '\n');
   } while (is_invalid);
@@ -190,7 +176,7 @@ void inp_cnt(int* cnt)
   do
   {
     printf("\nHanyadik alkalommal jelentkezik? ");
-    if ((is_invalid = (scanf("%i", cnt) == 0 || *cnt < 1)))
+    if (is_invalid = (scanf("%i", cnt) == 0 || *cnt < 1))
       fprintf(stderr, "Hiba: ervenytelen adat\n");
     while (getchar() != '\n');
   } while (is_invalid);

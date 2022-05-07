@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <sys/wait.h>
 #include <stdbool.h>
 #include <time.h>
 #include "contest.h"
@@ -65,6 +66,7 @@ void run_contest(Bunny* winner)
     }
   }
   close(LINE_FROM_INSPECTORS);
+  while(wait(NULL) > 0);
   printf(LOG_BOSS"veget ert a verseny\n");
 }
 
